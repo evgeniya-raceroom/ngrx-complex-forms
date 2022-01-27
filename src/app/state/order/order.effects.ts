@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core';
-import { MatDialog, MatSnackBar } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { OrderService } from '@core/services/order.service';
-import { Actions, Effect } from '@ngrx/effects';
+import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { ValidationDialogComponent } from '@shared/dialogs/validation-dialog/validation-dialog.component';
 import { AppState } from '@state/app.interfaces';
 import { LoadCustomers } from '@state/customer/customer.actions';
 import { DeleteLineItem, LoadLineItems, UpsertLineItems } from '@state/line-item/line-item.actions';
 import { LoadProducts } from '@state/product/product.actions';
-import { Observable } from 'rxjs/Observable';
-import { of } from 'rxjs/observable/of';
+import { Observable, of } from 'rxjs';
 import { catchError, exhaustMap, filter, map, mergeMap, switchMap, tap } from 'rxjs/operators';
 import {
   AddOrder,
@@ -34,16 +34,15 @@ import { Order } from './order.model';
 @Injectable()
 export class OrderEffects {
   @Effect()
-  add: Observable<Action> = this.actions$
-    .ofType<AddOrder>(OrderActionTypes.AddOrder)
+  add = this.actions$
     .pipe(
+      ofType<AddOrder>(OrderActionTypes.AddOrder),
       map(action => action.payload),
       filter(payload => !payload.order.id),
       switchMap(payload =>
-        this.service
-          .save(payload.order)
+        this.service.save(payload.order)
           .pipe(
-            map(order => new AddOrderSuccess({ lineItems: payload.lineItems, order })),
+            map((order: Order) => new AddOrderSuccess({ lineItems: payload.lineItems, order })),
             catchError(err => of(new LoadOrdersFail()))
           )
       )
@@ -53,13 +52,14 @@ export class OrderEffects {
     dispatch: false
   })
   closeValidationDialog: Observable<Action> = this.actions$
-    .ofType<CloseOrderValidationDialog>(OrderActionTypes.CloseOrderValidationDialog)
-    .pipe(tap(action => this.matDialog.closeAll()));
+    .pipe(
+      ofType<CloseOrderValidationDialog>(OrderActionTypes.CloseOrderValidationDialog),
+      tap(action => this.matDialog.closeAll()));
 
   @Effect()
   deleteLineItems: Observable<Action> = this.actions$
-    .ofType<UpdateLineItemsAndOrder>(OrderActionTypes.UpdateLineItemsAndOrder)
     .pipe(
+      ofType<UpdateLineItemsAndOrder>(OrderActionTypes.UpdateLineItemsAndOrder),
       map(action => action.payload),
       filter(payload => !!payload.order && !!payload.order.lineItemIds && payload.order.lineItemIds.length > 0),
       map(payload =>
@@ -71,8 +71,8 @@ export class OrderEffects {
 
   @Effect()
   load: Observable<Action> = this.actions$
-    .ofType(OrderActionTypes.LoadOrders)
     .pipe(
+      ofType(OrderActionTypes.LoadOrders),
       exhaustMap(() => this.service.getOrders()),
       map((orders: Order[]) => new LoadOrdersSuccess({ orders })),
       catchError(err => of(new AddOrderFail()))
@@ -80,13 +80,14 @@ export class OrderEffects {
 
   @Effect()
   loadOrdersView = this.actions$
-    .ofType(OrderActionTypes.LoadOrdersView)
-    .pipe(mergeMap(add => [new LoadOrders(), new LoadCustomers(), new LoadProducts(), new LoadLineItems()]));
+    .pipe(
+      ofType(OrderActionTypes.LoadOrdersView),
+      mergeMap(add => [new LoadOrders(), new LoadCustomers(), new LoadProducts(), new LoadLineItems()]));
 
   @Effect()
   loadById: Observable<Action> = this.actions$
-    .ofType<LoadOrder>(OrderActionTypes.LoadOrder)
     .pipe(
+      ofType<LoadOrder>(OrderActionTypes.LoadOrder),
       exhaustMap(action => this.service.getOrder(action.payload.id)),
       map((order: Order) => new LoadOrderSuccess({ order })),
       catchError(err => of(new LoadOrderFail()))
@@ -96,8 +97,8 @@ export class OrderEffects {
     dispatch: false
   })
   openValidationDialog: Observable<Action> = this.actions$
-    .ofType<OpenOrderValidationDialog>(OrderActionTypes.OpenOrderValidationDialog)
     .pipe(
+      ofType<OpenOrderValidationDialog>(OrderActionTypes.OpenOrderValidationDialog),
       tap((action: OpenOrderValidationDialog) =>
         this.matDialog.open(ValidationDialogComponent, {
           data: {
@@ -111,15 +112,17 @@ export class OrderEffects {
     dispatch: false
   })
   showSnackBarAfterUpdate: Observable<Action> = this.actions$
-    .ofType<UpdateOrderSuccess>(OrderActionTypes.UpdateOrderSuccess)
-    .pipe(tap(() => this.matSnackBar.open('Order Saved.', 'Success', { duration: 2000 })));
+    .pipe(
+      ofType<UpdateOrderSuccess>(OrderActionTypes.UpdateOrderSuccess),
+      tap(() => this.matSnackBar.open('Order Saved.', 'Success', { duration: 2000 })));
 
   @Effect()
-  update: Observable<Action> = this.actions$.ofType<UpdateOrder>(OrderActionTypes.UpdateOrder).pipe(
+  update: Observable<Action> = this.actions$.pipe(
+    ofType<UpdateOrder>(OrderActionTypes.UpdateOrder),
     map(action => action.payload.order),
     exhaustMap(order => this.service.save(order)),
     map(
-      order =>
+      (order: Order) =>
         new UpdateOrderSuccess({
           order: {
             id: order.id,
@@ -132,11 +135,13 @@ export class OrderEffects {
 
   @Effect()
   upsertLineItems: Observable<Action> = this.actions$
-    .ofType<UpdateLineItemsAndOrder | AddOrderSuccess>(
-      OrderActionTypes.UpdateLineItemsAndOrder,
-      OrderActionTypes.AddOrderSuccess
-    )
-    .pipe(map(action => action.payload), map(payload => new UpsertLineItems(payload)));
+    .pipe(
+      ofType<UpdateLineItemsAndOrder | AddOrderSuccess>(
+        OrderActionTypes.UpdateLineItemsAndOrder,
+        OrderActionTypes.AddOrderSuccess
+      ),
+      map(action => action.payload),
+      map(payload => new UpsertLineItems(payload)));
 
   constructor(
     private actions$: Actions,

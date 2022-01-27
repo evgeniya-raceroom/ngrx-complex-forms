@@ -16,7 +16,7 @@ import { OrderService } from '@core/services/order.service';
   providers: [CustomerService, LineItemService, OrderService, ProductService]
 })
 export class CoreModule {
-  static forRoot(): ModuleWithProviders {
+  static forRoot(): ModuleWithProviders<any> {
     return {
       ngModule: CoreModule
     };

@@ -11,8 +11,8 @@ import { ClearSelectedOrder, DeleteOrder, LoadOrdersView, SelectOrder } from '@s
 import { Order, OrderView } from '@state/order/order.model';
 import * as fromProductStore from '@state/product';
 import { Product } from '@state/product/product.model';
-import { Observable } from 'rxjs/Observable';
 import { combineLatest, filter, map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 @Component({
   templateUrl: './orders.component.html',

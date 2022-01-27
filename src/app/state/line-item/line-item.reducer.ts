@@ -61,7 +61,7 @@ export function reducer(state = initialState, action: LineItemActions): State {
 
     case LineItemActionTypes.LoadLineItemsSuccess: {
       return {
-        ...adapter.addAll(action.payload.lineItems, state),
+        ...adapter.addMany(action.payload.lineItems, state),
         loading: false
       };
     }
@@ -75,7 +75,7 @@ export function reducer(state = initialState, action: LineItemActions): State {
     }
 
     case LineItemActionTypes.UpsertLineItemsSuccess: {
-      return adapter.upsertMany(action.payload.lineItems, state);
+      return adapter.updateMany(action.payload.lineItems, state); // was upset
     }
 
     default: {

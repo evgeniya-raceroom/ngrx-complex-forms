@@ -70,7 +70,7 @@ export function reducer(state = initialState, action: OrderActions): State {
 
     case OrderActionTypes.LoadOrdersSuccess: {
       return {
-        ...adapter.addAll(action.payload.orders, state),
+        ...adapter.addMany(action.payload.orders, state),
         loading: false
       };
     }

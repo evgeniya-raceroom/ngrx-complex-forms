@@ -3,7 +3,10 @@
   <app-customer [(customer)]="customer" [customers]="customers" (validationChange)="onValidationChange($event)"></app-customer>
 
   <h4>Line Items</h4>
-  <app-lineitems-table [(lineItems)]="lineItems" [products]="products" (validationChange)="onValidationChange($event)" (validationDelete)="onValidationDelete($event)"></app-lineitems-table>
+  <app-lineitems-table [(lineItems)]="lineItems"
+                       [products]="products"
+                       (validationChange)="onValidationChange($event)"
+                       (validationDelete)="onValidationDelete($event)"></app-lineitems-table>
 
   <h4>Order Summary</h4>
   <app-order-summary [lineItems]=" lineItems " [order]="order " [products]="products "></app-order-summary>

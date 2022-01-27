@@ -25,7 +25,7 @@ export function reducer(state = initialState, action: CustomerActions): State {
     }
 
     case CustomerActionTypes.UpsertCustomer: {
-      return adapter.upsertOne(action.payload.customer, state);
+      return adapter.updateOne(action.payload.customer, state); // was upsert
     }
 
     case CustomerActionTypes.AddCustomers: {
@@ -33,7 +33,7 @@ export function reducer(state = initialState, action: CustomerActions): State {
     }
 
     case CustomerActionTypes.UpsertCustomers: {
-      return adapter.upsertMany(action.payload.customers, state);
+      return adapter.updateMany(action.payload.customers, state); // was upsert
     }
 
     case CustomerActionTypes.UpdateCustomer: {
@@ -62,7 +62,7 @@ export function reducer(state = initialState, action: CustomerActions): State {
 
     case CustomerActionTypes.LoadCustomersSuccess: {
       return {
-        ...adapter.addAll(action.payload.customers, state),
+        ...adapter.addMany(action.payload.customers, state),
         loading: false
       };
     }

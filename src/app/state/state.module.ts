@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ModuleWithProviders, NgModule, Optional, SkipSelf } from '@angular/core';
-import { MatDialogModule, MatSnackBarModule } from '@angular/material';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { EffectsModule } from '@ngrx/effects';
 import { RouterStateSerializer, StoreRouterConnectingModule } from '@ngrx/router-store';
 import { StoreModule } from '@ngrx/store';
@@ -18,7 +19,7 @@ import { CustomRouterStateSerializer } from './shared/utils';
     CommonModule,
     MatDialogModule,
     MatSnackBarModule,
-    StoreRouterConnectingModule,
+    StoreRouterConnectingModule.forRoot(),
     StoreModule.forRoot(appReducer, { metaReducers: appMetaReducers }),
     EffectsModule.forRoot([CustomerEffects, ProductEffects, OrderEffects, LineItemEffects]),
     !environment.production ? StoreDevtoolsModule.instrument() : []
@@ -26,7 +27,7 @@ import { CustomRouterStateSerializer } from './shared/utils';
   declarations: []
 })
 export class StateModule {
-  static forRoot(): ModuleWithProviders {
+  static forRoot(): ModuleWithProviders<any> {
     return {
       ngModule: StateModule,
       providers: [

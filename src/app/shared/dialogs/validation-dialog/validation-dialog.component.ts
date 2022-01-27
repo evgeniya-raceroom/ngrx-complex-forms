@@ -1,9 +1,9 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { Validation } from '@core/interfaces/validation';
 import { Store } from '@ngrx/store';
 import { AppState } from '@state/app.interfaces';
 import { CloseOrderValidationDialog } from '@state/order/order.actions';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 interface Data {
   validations: Validation[];

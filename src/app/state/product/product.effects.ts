@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Actions, Effect } from '@ngrx/effects';
+import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Action, Store, select } from '@ngrx/store';
-import { Observable } from 'rxjs/Observable';
 import {
   map,
   switchMap,
@@ -10,7 +9,6 @@ import {
   withLatestFrom,
   tap
 } from 'rxjs/operators';
-import { of } from 'rxjs/observable/of';
 
 import { Product } from './product.model';
 import {
@@ -33,13 +31,14 @@ import {
 import { AppState } from '@state/app.interfaces';
 import * as fromStore from './';
 import { ProductService } from '@core/services/product.service';
+import { Observable, of } from 'rxjs';
 
 @Injectable()
 export class ProductEffects {
   @Effect()
   add: Observable<Action> = this.actions$
-    .ofType<AddProduct>(ProductActionTypes.AddProduct)
     .pipe(
+      ofType<AddProduct>(ProductActionTypes.AddProduct),
       switchMap(action => this.service.save(action.payload.product)),
       map((product: Product) => new AddProductSuccess({ product: product })),
       catchError(err => of(new AddProductFail()))
@@ -49,13 +48,14 @@ export class ProductEffects {
     dispatch: false
   })
   addSuccess: Observable<Action> = this.actions$
-    .ofType<AddProductSuccess>(ProductActionTypes.AddProductSuccess)
-    .pipe(tap(() => this.router.navigate(['products'])));
+    .pipe(
+      ofType<AddProductSuccess>(ProductActionTypes.AddProductSuccess),
+      tap(() => this.router.navigate(['products'])));
 
   @Effect()
   delete: Observable<Action> = this.actions$
-    .ofType<DeleteProduct>(ProductActionTypes.DeleteProduct)
     .pipe(
+      ofType<DeleteProduct>(ProductActionTypes.DeleteProduct),
       switchMap(action => this.service.delete(action.payload.product)),
       map((product: Product) => new DeleteProductSuccess({ product: product })),
       catchError(err => of(new DeleteProductFail()))
@@ -63,8 +63,8 @@ export class ProductEffects {
 
   @Effect()
   load: Observable<Action> = this.actions$
-    .ofType(ProductActionTypes.LoadProducts)
     .pipe(
+      ofType(ProductActionTypes.LoadProducts),
       switchMap(() => this.service.getProducts()),
       map(
         (products: Product[]) => new LoadProductsSuccess({ products: products })
@@ -74,8 +74,8 @@ export class ProductEffects {
 
   @Effect()
   loadById: Observable<Action> = this.actions$
-    .ofType<LoadProduct>(ProductActionTypes.LoadProduct)
     .pipe(
+      ofType<LoadProduct>(ProductActionTypes.LoadProduct),
       switchMap(action => this.service.getProduct(action.payload.id)),
       map((product: Product) => new LoadProductSuccess({ product: product })),
       catchError(err => of(new LoadProductFail()))
@@ -83,8 +83,8 @@ export class ProductEffects {
 
   @Effect()
   update: Observable<Action> = this.actions$
-    .ofType<UpdateProduct>(ProductActionTypes.UpdateProduct)
     .pipe(
+      ofType<UpdateProduct>(ProductActionTypes.UpdateProduct),
       withLatestFrom(this.store.pipe(select(fromStore.getSelectedProduct))),
       switchMap(([action, product]) => this.service.save(product)),
       map((product: Product) => new UpdateProductSuccess({ product: product })),

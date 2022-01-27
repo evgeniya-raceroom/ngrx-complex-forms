@@ -1,8 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { OrdersRoutingModule } from './orders/orders-routing.module';
-
 const routes: Routes = [
   {
     path: '',
@@ -11,11 +9,13 @@ const routes: Routes = [
   },
   {
     path: 'orders',
-    loadChildren: 'app/orders/orders-routing.module#OrdersRoutingModule'
+    // @ts-ignore
+    loadChildren: () => import('./orders/orders-routing.module').then((m) => m.OrdersRoutingModule),
   },
   {
     path: 'products',
-    loadChildren: 'app/products/products-routing.module#ProductsRoutingModule'
+    // @ts-ignore
+    loadChildren: () => import('./products/products-routing.module').then((m) => m.ProductsRoutingModule)
   }
 ];
 
